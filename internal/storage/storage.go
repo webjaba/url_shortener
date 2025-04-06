@@ -2,6 +2,7 @@ package storage
 
 import (
 	"url-shortener/internal/storage/inmemory"
+	"url-shortener/internal/storage/models"
 	"url-shortener/internal/storage/postgre"
 )
 
@@ -14,7 +15,7 @@ func GetStorage(storageType string) Storage {
 	switch storageType {
 	case "postgres":
 		db := postgre.ConnectDB()
-		db.AutoMigrate(Urls{})
+		db.AutoMigrate(models.Url{})
 		return postgre.InitStorage(db)
 	case "inmemory":
 		return inmemory.InitStorage()

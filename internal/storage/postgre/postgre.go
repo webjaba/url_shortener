@@ -13,7 +13,7 @@ import (
 type ConfigDatabase struct {
 	Port     string `env:"PORT" env-default:"5432"`
 	Host     string `env:"HOST" env-default:"localhost"`
-	Name     string `env:"NAME" env-default:"messanger_db"`
+	Name     string `env:"NAME" env-default:"url_shortener"`
 	User     string `env:"USER" env-default:"postgres"`
 	Password string `env:"PASSWORD"`
 }
