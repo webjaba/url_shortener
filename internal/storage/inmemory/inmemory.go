@@ -1,7 +1,7 @@
 package inmemory
 
 import (
-	"errors"
+	apperrors "url-shortener/internal/app_errors"
 )
 
 type MemStorage struct {
@@ -15,7 +15,7 @@ func InitStorage() *MemStorage {
 func (s *MemStorage) GetURL(alias string) (string, error) {
 	url, exists := s.urls[alias]
 	if !exists {
-		return "", errors.New("url does not exists")
+		return "", apperrors.ErrURLNotFound
 	}
 	return url, nil
 }
@@ -23,7 +23,7 @@ func (s *MemStorage) GetURL(alias string) (string, error) {
 func (s *MemStorage) AddURL(url, alias string) error {
 	_, exists := s.urls[alias]
 	if exists {
-		return errors.New("url exists")
+		return apperrors.ErrURLAlreadyExists
 	}
 	return nil
 }

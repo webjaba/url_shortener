@@ -3,6 +3,7 @@ package postgre
 import (
 	"errors"
 	"fmt"
+	apperrors "url-shortener/internal/app_errors"
 	"url-shortener/internal/storage/models"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -65,7 +66,7 @@ func (s *PostgreStorage) GetURL(alias string) (string, error) {
 
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return "", errors.New("url not found")
+			return "", apperrors.ErrURLNotFound
 		} else {
 			return "", fmt.Errorf("error of getting url: %v", res.Error)
 		}
@@ -94,5 +95,5 @@ func (s *PostgreStorage) AddURL(url, alias string) error {
 		}
 	}
 
-	return errors.New("url already exists")
+	return apperrors.ErrURLAlreadyExists
 }
