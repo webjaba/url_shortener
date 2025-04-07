@@ -1,8 +1,12 @@
 package main
 
 import (
+	"net/http"
 	"os"
+	"url-shortener/internal/handlers"
 	"url-shortener/internal/storage"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -14,7 +18,11 @@ func main() {
 
 	storage := storage.GetStorage(storageType)
 
-	_ = storage
+	h := handlers.InitHandler(storage)
 
-	// TODO: init url handler
+	r := mux.NewRouter()
+
+	r.HandleFunc("/", h.CreateURL).Methods("POST")
+	r.HandleFunc("/{alias}", h.GetURL).Methods("GET")
+	http.ListenAndServe(":8888", r)
 }
