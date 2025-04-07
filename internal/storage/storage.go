@@ -8,7 +8,7 @@ import (
 
 type Storage interface {
 	GetURL(alias string) (string, error)
-	AddURL(url, alias string) error
+	AddURL(url, alias string) (string, error)
 }
 
 func GetStorage(storageType string) Storage {
