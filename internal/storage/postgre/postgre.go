@@ -75,25 +75,29 @@ func (s *PostgreStorage) GetURL(alias string) (string, error) {
 	return url.Url, nil
 }
 
-func (s *PostgreStorage) AddURL(url, alias string) error {
+func (s *PostgreStorage) AddURL(url, alias string) (string, error) {
 
 	urlObj := models.Url{}
 
-	res := s.db.First(&urlObj, "alias = ?", alias)
+	res := s.db.Where("alias = ? OR url = ?", alias, url).First(&urlObj)
 
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			res := s.db.Create(&models.Url{Url: url, Alias: alias})
-
-			if res.Error != nil {
-				return fmt.Errorf("error of creating url: %v", res.Error)
-			}
-
-			return nil
+	if res.Error == nil {
+		if urlObj.Alias == alias {
+			return "", apperrors.ErrAliasAlreadyOccupied
 		} else {
-			return fmt.Errorf("error of creating url: %v", res.Error)
+			return urlObj.Alias, apperrors.ErrURLAlreadyExists
 		}
 	}
 
-	return apperrors.ErrURLAlreadyExists
+	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+		res := s.db.Create(&models.Url{Url: url, Alias: alias})
+
+		if res.Error != nil {
+			return "", fmt.Errorf("error of creating url: %v", res.Error)
+		}
+
+		return alias, nil
+	} else {
+		return "", fmt.Errorf("error of creating url: %v", res.Error)
+	}
 }
