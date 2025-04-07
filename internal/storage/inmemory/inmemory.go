@@ -20,10 +20,16 @@ func (s *MemStorage) GetURL(alias string) (string, error) {
 	return url, nil
 }
 
-func (s *MemStorage) AddURL(url, alias string) error {
+func (s *MemStorage) AddURL(url, alias string) (string, error) {
 	_, exists := s.urls[alias]
 	if exists {
-		return apperrors.ErrURLAlreadyExists
+		return "", apperrors.ErrAliasAlreadyOccupied
 	}
-	return nil
+	for existsAlias, existsURL := range s.urls {
+		if existsURL == url {
+			return existsAlias, apperrors.ErrURLAlreadyExists
+		}
+	}
+	s.urls[alias] = url
+	return alias, nil
 }
